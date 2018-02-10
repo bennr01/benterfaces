@@ -1,0 +1,38 @@
+"""miscelaneous test helpers. This should only be used for benterface tests!"""
+from zope.interface import Interface, implements
+
+
+class ITestPlugin(Interface):
+    """A test interface."""
+    def get_id(self):
+        """return an id string."""
+        pass
+
+
+class IPriorityTestPlugin(Interface):
+    """A test interface."""
+    def get_id(self):
+        """return an id string."""
+        pass
+
+
+class IRequirementTestPlugin(Interface):
+    """A test interface."""
+    def get_id(self):
+        """return an id string."""
+        pass
+
+
+class IDoNotImplement(Interface):
+    """An interface to test not implemented interfaces."""
+    def do_nothing(self):
+        """do nothing."""
+        pass
+
+
+class TestPluginForExlusion(object):
+    """A test plugin for testing exclusion."""
+    implements(ITestPlugin)
+
+    def get_id(self):
+        return "test_plugin_for_exclusion"
