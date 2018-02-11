@@ -1,5 +1,5 @@
 """plugin priority tests."""
-from zope.interface import implements
+from zope.interface import implementer
 
 from benterfaces import priority
 from benterfaces._test import IPriorityTestPlugin
@@ -7,9 +7,9 @@ from benterfaces._test import IPriorityTestPlugin
 
 
 @priority(10)
+@implementer(IPriorityTestPlugin)
 class LowPriorityImplementation(object):
     """A low priority plugin."""
-    implements(IPriorityTestPlugin)
 
     def get_id(self):
         """returns the plugin id."""
@@ -17,9 +17,9 @@ class LowPriorityImplementation(object):
 
 
 @priority(20)
+@implementer(IPriorityTestPlugin)
 class MediumPriorityImplementation(object):
     """A medium priority plugin."""
-    implements(IPriorityTestPlugin)
 
     def get_id(self):
         """returns the plugin id."""
@@ -27,9 +27,9 @@ class MediumPriorityImplementation(object):
 
 
 @priority(30)
+@implementer(IPriorityTestPlugin)
 class HighPriorityImplementation(object):
     """A high priority plugin."""
-    implements(IPriorityTestPlugin)
 
     def get_id(self):
         """returns the plugin id."""

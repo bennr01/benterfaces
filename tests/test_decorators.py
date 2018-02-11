@@ -1,5 +1,5 @@
 """Tests for benterfaces.decorators"""
-from zope.interface import Interface, implements, Attribute
+from zope.interface import Interface, implementer, Attribute
 from zope.interface.verify import BrokenImplementation
 
 from benterfaces import verify_implementation
@@ -31,10 +31,9 @@ def test_valid_implementation_single():
 
     # create valid implementation
     @verify_implementation
+    @implementer(InterfaceA)
     class ImplementerA(object):
         """test implementation."""
-
-        implements(InterfaceA)
 
         attribute_a = 2
 
@@ -50,10 +49,9 @@ def test_invalid_method_implementation_single():
 
         # create an invalid implementation without method_a()
         @verify_implementation
+        @implementer(InterfaceA)
         class ImplementerA(object):
             """test implementation."""
-
-            implements(InterfaceA)
 
             attribute_a = 2
 
@@ -78,10 +76,9 @@ def test_invalid_attribute_implementation_single():
 
         # create an invalid implementation without attribute_a
         @verify_implementation
+        @implementer(InterfaceA)
         class ImplementerA(object):
             """test implementation."""
-
-            implements(InterfaceA)
 
             not_attribute_a = 2
 
@@ -103,10 +100,9 @@ def test_valid_implementation_multi():
     """test verify_implementation() handling of a valid multi interface class."""
 
     @verify_implementation
+    @implementer(InterfaceA, InterfaceB)
     class ImplementerAB(object):
         """test implementation."""
-
-        implements(InterfaceA, InterfaceB)
 
         attribute_a = 2
         attribute_b = 3
@@ -126,10 +122,9 @@ def test_invalid_attribute_1_implementation_multi():
     try:
         # this should fail
         @verify_implementation
+        @implementer(InterfaceA, InterfaceB)
         class ImplementerAB(object):
             """test implementation."""
-
-            implements(InterfaceA, InterfaceB)
 
             attribute_a = 2
             not_attribute_b = 3
@@ -156,10 +151,9 @@ def test_invalid_attribute_2_implementation_multi():
     try:
         # this should fail
         @verify_implementation
+        @implementer(InterfaceA, InterfaceB)
         class ImplementerAB(object):
             """test implementation."""
-
-            implements(InterfaceA, InterfaceB)
 
             not_attribute_a = 2
             attribute_b = 3
@@ -187,10 +181,9 @@ def test_invalid_method_1_implementation_multi():
     try:
         # this should fail
         @verify_implementation
+        @implementer(InterfaceA, InterfaceB)
         class ImplementerAB(object):
             """test implementation."""
-
-            implements(InterfaceA, InterfaceB)
 
             attribute_a = 2
             attribute_b = 3
@@ -217,10 +210,9 @@ def test_invalid_method_2_implementation_multi():
     try:
         # this should fail
         @verify_implementation
+        @implementer(InterfaceA, InterfaceB)
         class ImplementerAB(object):
             """test implementation."""
-
-            implements(InterfaceA, InterfaceB)
 
             attribute_a = 2
             attribute_b = 3

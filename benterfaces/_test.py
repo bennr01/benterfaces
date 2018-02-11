@@ -1,5 +1,5 @@
 """miscelaneous test helpers. This should only be used for benterface tests!"""
-from zope.interface import Interface, implements
+from zope.interface import Interface, implementer
 
 
 class ITestPlugin(Interface):
@@ -30,9 +30,9 @@ class IDoNotImplement(Interface):
         pass
 
 
+@implementer(ITestPlugin)
 class TestPluginForExlusion(object):
     """A test plugin for testing exclusion."""
-    implements(ITestPlugin)
 
     def get_id(self):
         return "test_plugin_for_exclusion"

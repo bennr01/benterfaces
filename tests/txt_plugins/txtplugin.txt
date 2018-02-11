@@ -1,12 +1,12 @@
 """A test txt plugin."""
-from zope.interface import Interface, implements
+from zope.interface import Interface, implementer
 
 from benterfaces._test import ITestPlugin
 
 
+@implementer(ITestPlugin)
 class TxtTestImplementation(object):
     """A test implementation in a .txt file."""
-    implements(ITestPlugin)
 
     def get_id(self):
         """return an id string."""

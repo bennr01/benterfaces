@@ -20,7 +20,7 @@ class PluginDiscoverer(object):
     @property
     def enabled(self):
         """number of enabled plugins."""
-        enabled = filter(None, [p if check_requirements(p) else None for p in self.plugins])
+        enabled = list(filter(None, [p if check_requirements(p) else None for p in self.plugins]))
         return len(enabled)
 
     def get_all_plugins(self, iface, exclude=[], sorted_by_priority=True):
@@ -83,7 +83,6 @@ class PluginDiscoverer(object):
 
     def _load_module_from_path(self, path):
         """loads a module from a given path."""
-        print "loading: ", path
         filename, extension = os.path.splitext(path)
         if extension == ".pyc":
             return imp.load_compiled(filename, path)

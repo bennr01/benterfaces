@@ -1,14 +1,13 @@
 """plugin requirements tests."""
-from zope.interface import implements
+from zope.interface import implementer
 
 from benterfaces import requires
 from benterfaces._test import IRequirementTestPlugin
 
 
+@implementer(IRequirementTestPlugin)
 class NoRequirementsPlugin(object):
     """plugin without requirement specification."""
-
-    implements(IRequirementTestPlugin)
 
     def get_id(self):
         """returns an id string."""
@@ -16,10 +15,9 @@ class NoRequirementsPlugin(object):
 
 
 @requires(condition=True)
+@implementer(IRequirementTestPlugin)
 class AlwaysTruePlugin(object):
     """plugin with condition always True requirement specification."""
-
-    implements(IRequirementTestPlugin)
 
     def get_id(self):
         """returns an id string."""
@@ -27,10 +25,9 @@ class AlwaysTruePlugin(object):
 
 
 @requires(condition=False)
+@implementer(IRequirementTestPlugin)
 class AlwaysFalsePlugin(object):
     """plugin with condition always False requirement specification."""
-
-    implements(IRequirementTestPlugin)
 
     def get_id(self):
         """returns an id string."""
@@ -38,10 +35,9 @@ class AlwaysFalsePlugin(object):
 
 
 @requires(modules=["unittest"])
+@implementer(IRequirementTestPlugin)
 class UnittestRequiredPlugin(object):
     """plugin requiring unittest."""
-
-    implements(IRequirementTestPlugin)
 
     def get_id(self):
         """returns an id string."""
@@ -49,10 +45,9 @@ class UnittestRequiredPlugin(object):
 
 
 @requires(modules=["does_notExist"])
+@implementer(IRequirementTestPlugin)
 class NotExistingModuleRequiredPlugin(object):
     """plugin requiring a non-existing module."""
-
-    implements(IRequirementTestPlugin)
 
     def get_id(self):
         """returns an id string."""
@@ -60,10 +55,9 @@ class NotExistingModuleRequiredPlugin(object):
 
 
 @requires(modules=["unittest", "does_notExist"])
+@implementer(IRequirementTestPlugin)
 class NotAllModulesRequiredExistingPlugin(object):
     """plugin requiring an existing and a non-existing module."""
-
-    implements(IRequirementTestPlugin)
 
     def get_id(self):
         """returns an id string."""
@@ -71,10 +65,9 @@ class NotAllModulesRequiredExistingPlugin(object):
 
 
 @requires(condition=False, modules=["unittest"])
+@implementer(IRequirementTestPlugin)
 class ModulesExistsButConditionIsFalsePlugin(object):
     """plugin requiring an existing module but having a False condition."""
-
-    implements(IRequirementTestPlugin)
 
     def get_id(self):
         """returns an id string."""
