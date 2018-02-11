@@ -1,0 +1,21 @@
+language: python
+python:
+  - "2.6"
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "nightly"
+  - "pypy"
+  - "pypy3"
+# command to install dependencies
+install:
+  - pip install nose coveralls
+  - python setup.py install
+# command to run tests
+script:
+  nosetests -v --with-coverage --cover-package benterfaces -s tests/
+after_success:
+  coveralls
