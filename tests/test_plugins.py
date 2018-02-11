@@ -72,6 +72,27 @@ def test_clear_plugin_list():
     assert discoverer.enabled > 0
 
 
+def test_reload_plugins():
+    """test PluginDiscoverer.reload_plugins()."""
+    discoverer = get_discoverer()
+    assert discoverer.loaded == 0
+    assert discoverer.enabled == 0
+    discoverer.load_plugins()
+    assert discoverer.loaded > 0
+    assert discoverer.enabled > 0
+    old_loaded = discoverer.loaded
+    old_enabled = discoverer.enabled
+    discoverer.clear_plugin_list()
+    assert discoverer.loaded == 0
+    assert discoverer.enabled == 0
+    discoverer.reload_plugins()
+    assert discoverer.loaded > 0
+    assert discoverer.enabled > 0
+    # number of plugins should not have changed
+    assert discoverer.loaded == old_loaded
+    assert discoverer.enabled == old_enabled
+
+
 def test_not_implemented_plugins():
     """ensure loading of not implemented plugins fails with NotImplementedError"""
     discoverer = get_discoverer()
@@ -192,3 +213,17 @@ def test_load_compiled():
     plugin = discoverer.get_implementation(ITestPlugin, exclude=[TestPluginForExlusion])
     pi = plugin()
     assert pi.get_id() == "test_pyc_plugin"
+
+
+def test_is_implemented():
+    """test is_implemented()"""
+    discoverer = get_discoverer()
+    assert discoverer.loaded == 0
+    assert discoverer.enabled == 0
+    assert not discoverer.is_implemented(ITestPlugin)
+    assert not discoverer.is_implemented(IDoNotImplement)
+    discoverer.load_plugins()
+    assert discoverer.loaded > 0
+    assert discoverer.enabled > 0
+    assert discoverer.is_implemented(ITestPlugin)
+    assert not discoverer.is_implemented(IDoNotImplement)

@@ -50,9 +50,25 @@ class PluginDiscoverer(object):
 
     get_plugin = get_implementation
 
+    def is_implemented(self, iface, exclude=[]):
+        """
+        Returns True if there is an implementation of iface which is not in excluding.
+        Returns False otherwise.
+        """
+        plugins = self.get_all_plugins(iface, exclude=exclude, sorted_by_priority=False)
+        if len(plugins) == 0:
+            return False
+        else:
+            return True
+
     def clear_plugin_list(self):
-        """clears the internal plugin list."""
+        """clear the internal plugin list."""
         self.plugins = []
+
+    def reload_plugins(self):
+        """clear the internal plugin list and reload all plugins."""
+        self.clear_plugin_list()
+        self.load_plugins()
 
     def load_plugins(self, max_depth=9999):
         """loads plugins from the paths"""

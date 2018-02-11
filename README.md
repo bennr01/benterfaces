@@ -53,9 +53,11 @@ Important methods and attributes:
 - `loaded`: number of loaded plugins
 - `enabled`: number of enabled plugins
 - `clear_plugin_list()`: clears the internal plugin cache.
+- `reload_plugins()`: clears the internal plugin cache and the load the plugins again.
 - `get_implementation(self, iface, exclude=[])`: returns the plugin implementing `iface` with the highest priority which is not in `exclude`. This raises a `NotImplementedError` if no plugin if found.
 - `get_plugin(...)`: same as `get_implementation()`.
 - `get_all_plugins(self, iface, exclude=[], sorted_by_priority=True)`: returns a list of all plugins implementing iface excluding `exclude`.
+- `is_implemented(iface, exclude=[])`: returns True if iface is implemented by any plugin excluding `exclude`, otherwise False.
 
 
 **@requires(condition=True, modules=[])**
