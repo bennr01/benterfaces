@@ -1,6 +1,15 @@
 """Tests for benterfaces.decorators"""
 import os
-from unittest import skipIf
+
+try:
+    from unittest import skipIf
+except ImportError:
+    def skipIf(condition, desc):
+        if condition:
+            print("skipping: " + desc)
+            return lambda f: (lambda: None)
+        else:
+            return lambda f: f
 
 try:
     import py_compile
