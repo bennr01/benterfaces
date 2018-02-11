@@ -4,7 +4,7 @@
 
 # Interface utilities
 **@verify_implementation**
-A simple decorator for verifying Interface implementations when the class is created.
+A simple decorator for verifying interface implementations when a class is created.
 For example, the following code would raise a BrokenImplementationError if FooBar would not implement IFoo or IBar correctly.
 
 ```python
