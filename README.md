@@ -8,15 +8,15 @@ A simple decorator for verifying Interface implementations when the class is cre
 For example, the following code would raise a BrokenImplementationError if FooBar would not implement IFoo or IBar correctly.
 
 ```python
-from zope.interfaces import implements
+from zope.interfaces import implementer
 from benterfaces import verify_implementation
 
 from imyproject import IFoo, IBar
 
 
 @verify_implementation
+@implementer(IFoo, IBar)
 class FooBar(object):
-    implements(IFoo, IBar)
     ...
 
 
@@ -35,7 +35,9 @@ Here is a list of some features of the plugin system:
 - load plugins from python source files of any file extension
 - load plugins from `.pyc`-files
 
+
 **PluginDiscoverer(paths, extensions=[".py"])**
+
 This class handles the plugin discovery and loading.
 Arguments:
 - `paths`: list of strings specifying directories to search for plugins.
@@ -50,13 +52,18 @@ Important methods and attributes:
 - `get_plugin(...)`: same as `get_implementation()`.
 - `get_all_plugins(self, iface, exclude=[], sorted_by_priority=True)`: returns a list of all plugins implementing iface excluding `exclude`.
 
+
 **@requires(condition=True, modules=[])**
+
 This decorator function marks the requirements of a plugin.
-`condition`: a boolean which must be `True` in order for the plugin to be enabled.
-`modules`: a list of module names which are required for the plugin to be enabled.
+Arguments:
+- `condition`: a boolean which must be `True` in order for the plugin to be enabled.
+- `modules`: a list of module names which are required for the plugin to be enabled.
 Plugins without a `@requires(...)` decorator are always enabled.
 
+
 **@priority(n=0)**
+
 This decorator function sets the priority of a plugin.
 Higher values for `n` mean a higher priority.
 Plugins without a `@priority(...)` decorator are considered to have a priority of `0`.
