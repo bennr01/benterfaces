@@ -11,7 +11,7 @@ setup(
     description="interface utilities",
     long_description=open("README.md").read(),
     license="MIT",
-    keywords="interface interfaces utilities",
+    keywords="interface interfaces utilities plugin plugins",
     url="https://github.com/bennr01/benterfaces/",
     classifiers=[
         "License :: OSI Approved :: MIT License",
