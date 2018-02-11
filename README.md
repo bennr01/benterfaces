@@ -1,4 +1,9 @@
 # benterfaces - Interface utilities and plugin system
+[![Travis](https://img.shields.io/travis/bennr01/benterfaces.svg)]()
+[![Coveralls github](https://img.shields.io/coveralls/github/bennr01/benterfaces.svg)]()
+[![GitHub issues](https://img.shields.io/github/issues/bennr01/benterfaces.svg)](https://github.com/bennr01/benterfaces/issues)
+[![GitHub license](https://img.shields.io/github/license/bennr01/benterfaces.svg)](https://github.com/bennr01/benterfaces/blob/master/LICENSE)
+
 
 `benterfaces` contains miscellaneous interface utilities and a plugin system.
 
