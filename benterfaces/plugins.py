@@ -7,10 +7,14 @@ from zope.interface import implementedBy
 
 class PluginDiscoverer(object):
     """Class for discovering plugins."""
-    def __init__(self, paths, extensions=[".py"]):
+    def __init__(self, paths, extensions=[".py"], ignore_errors=False):
+        assert isinstance(paths, list), "expected a list of paths!"
+        assert isinstance(extensions, list), "expected a list of extensions!"
         self.paths = paths
         self.extensions = extensions
+        self._ignore_errors = ignore_errors
         self.plugins = []
+        self._error_paths = []
 
     @property
     def loaded(self):
@@ -22,6 +26,16 @@ class PluginDiscoverer(object):
         """number of enabled plugins."""
         enabled = list(filter(None, [p if check_requirements(p) else None for p in self.plugins]))
         return len(enabled)
+
+    @property
+    def errors(self):
+        """number of errors when tried to load plugins."""
+        return len(self._error_paths)
+
+    @property
+    def error_paths(self):
+        """list of paths which could not be loaded."""
+        return self._error_paths
 
     def get_all_plugins(self, iface, exclude=[], sorted_by_priority=True):
         """returns a list of all plugins implementing iface."""
@@ -64,6 +78,7 @@ class PluginDiscoverer(object):
     def clear_plugin_list(self):
         """clear the internal plugin list."""
         self.plugins = []
+        self._error_paths = []
 
     def reload_plugins(self):
         """clear the internal plugin list and reload all plugins."""
@@ -88,7 +103,12 @@ class PluginDiscoverer(object):
             else:
                 filename, extension = os.path.splitext(fn)
                 if (self.extensions is None) or (extension in self.extensions):
-                    results += self._load_from_path(fp)
+                    try:
+                        results += self._load_from_path(fp)
+                    except (Exception, SyntaxError) as e:
+                        self._error_paths.append(fp)
+                        if not self._ignore_errors:
+                            raise e
         return results
 
     def _load_from_path(self, path):
