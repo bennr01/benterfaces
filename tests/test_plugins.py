@@ -21,8 +21,8 @@ from zope.interface.verify import BrokenImplementation
 
 from benterfaces import PluginDiscoverer, verify_implementation
 from benterfaces._test import ITestPlugin, IDoNotImplement
-from benterfaces._test import TestPluginForExlusion, IPriorityTestPlugin
-from benterfaces._test import IRequirementTestPlugin
+from benterfaces._test import TestPluginForExlusion, TestPluginForInclusion
+from benterfaces._test import IRequirementTestPlugin, IPriorityTestPlugin
 
 
 TEST_PATH = os.path.dirname(__file__)
@@ -190,7 +190,7 @@ def test_requirements_modules():
 
 
 def test_discover_ignore_txt():
-    """tests that files ending with .txt are ignored if not told."""
+    """test that files ending with .txt are ignored if not told."""
     discoverer = PluginDiscoverer([TEST_TXT_PLUGIN_PATH], extensions=[".py"])
     assert discoverer.loaded == 0
     assert discoverer.enabled == 0
@@ -200,7 +200,7 @@ def test_discover_ignore_txt():
 
 
 def test_discover_include_txt():
-    """tests that files ending with .txt are loaded if specified."""
+    """test that files ending with .txt are loaded if specified."""
     discoverer = PluginDiscoverer([TEST_TXT_PLUGIN_PATH], extensions=[".txt"])
     discoverer.load_plugins()
     loaded = discoverer.loaded
@@ -211,6 +211,28 @@ def test_discover_include_txt():
     assert ITestPlugin.implementedBy(plugin)
     pi = plugin()
     assert pi.get_id() == "test_txt_plugin"
+
+
+def test_discover_include():
+    """test that the include parameter for PluginDiscoverer works."""
+    # 1. check that the plugin is not loaded anyways
+    discoverer = PluginDiscoverer([TEST_PLUGIN_PATH])
+    discoverer.load_plugins()
+    loaded = discoverer.loaded
+    enabled = discoverer.enabled
+    assert loaded > 0
+    assert enabled > 0
+    plugins = discoverer.get_all_plugins(ITestPlugin)
+    assert TestPluginForInclusion not in plugins
+    # 2. repeat, but include plugin
+    discoverer = PluginDiscoverer([TEST_PLUGIN_PATH], include=[TestPluginForInclusion])
+    discoverer.load_plugins()
+    loaded = discoverer.loaded
+    enabled = discoverer.enabled
+    assert loaded > 0
+    assert enabled > 0
+    plugins = discoverer.get_all_plugins(ITestPlugin)
+    assert TestPluginForInclusion in plugins
 
 
 @skipIf((py_compile is None), "py_compile not found")

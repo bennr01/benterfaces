@@ -36,3 +36,11 @@ class TestPluginForExlusion(object):
 
     def get_id(self):
         return "test_plugin_for_exclusion"
+
+
+@implementer(ITestPlugin)
+class TestPluginForInclusion(object):
+    """A test plugin for testing inclusion."""
+
+    def get_id(self):
+        return "test_plugin_for_inclusion"

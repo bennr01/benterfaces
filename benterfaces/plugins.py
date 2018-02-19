@@ -6,41 +6,74 @@ from zope.interface import implementedBy
 
 
 class PluginDiscoverer(object):
-    """Class for discovering plugins."""
-    def __init__(self, paths, extensions=[".py"], ignore_errors=False):
+    """
+    Class for discovering plugins.
+    :param paths: paths which should be searched for plugins
+    :type paths: list
+    :param extensions: only files whose extensions are in this list will be searched for plugins
+    :type paths: list
+    :param ignore_errors: wether to silently handle errors when loading plugins
+    :type ignore_errors: boolean
+    :param defaults: list of plugins which will be included in the results
+    :type defaults: list
+    """
+    def __init__(self, paths, extensions=[".py"], ignore_errors=False, include=[]):
         assert isinstance(paths, list), "expected a list of paths!"
         assert isinstance(extensions, list), "expected a list of extensions!"
+        assert isinstance(include, list)
         self.paths = paths
         self.extensions = extensions
+        self.include = include
         self._ignore_errors = ignore_errors
         self.plugins = []
         self._error_paths = []
 
     @property
     def loaded(self):
-        """number of loaded plugins, including disabled ones."""
+        """
+        Number of loaded plugins, including disabled ones.
+        This does not include plugins from 'self.include'.
+        """
         return len(self.plugins)
 
     @property
     def enabled(self):
-        """number of enabled plugins."""
+        """
+        Number of enabled plugins.
+        This does not include plugins  from 'self.include'.
+        """
         enabled = list(filter(None, [p if check_requirements(p) else None for p in self.plugins]))
         return len(enabled)
 
     @property
     def errors(self):
-        """number of errors when tried to load plugins."""
+        """
+        Number of errors when tried to load plugins.
+        """
         return len(self._error_paths)
 
     @property
     def error_paths(self):
-        """list of paths which could not be loaded."""
+        """
+        List of paths which could not be loaded.
+        """
         return self._error_paths
 
     def get_all_plugins(self, iface, exclude=[], sorted_by_priority=True):
-        """returns a list of all plugins implementing iface."""
+        """
+        Returns a list of all plugins implementing iface.
+        :param iface: iface for which plugins will be searched.
+        :type iface: zope.interface.Interface
+        :param exclude: plugins which will not be returned from this list.
+        :type exclude: list
+        :param sorted_by_priority: wether the plugins should be returned in priority order (highest priority first)
+        :type sorted_by_priority: boolean
+        :return: list of plugins
+        :rtype: list
+        """
         ret = []
-        for plugin in self.plugins:
+        plugins = self.plugins + self.include
+        for plugin in plugins:
             if plugin in exclude:
                 continue
             if not iface.implementedBy(plugin):
@@ -56,6 +89,13 @@ class PluginDiscoverer(object):
         """
         Returns an implementation of iface, excluding any implementation in excluding.
         Raises NotImplementedError if None is found.
+        :param iface: iface for which plugins will be searched.
+        :type iface: zope.interface.Interface
+        :param exclude: plugins which will not be returned from this list.
+        :type exclude: list
+        :return: the plugin with the heighest priority
+        :rtype: object
+        :raises: NotImplementedError if no plugin implements iface
         """
         plugins = self.get_all_plugins(iface, exclude=exclude, sorted_by_priority=True)
         if len(plugins) == 0:
@@ -86,7 +126,12 @@ class PluginDiscoverer(object):
         self.load_plugins()
 
     def load_plugins(self, max_depth=9999):
-        """loads plugins from the paths"""
+        """
+        Load plugins from the paths.
+        This may raise exceptions or errors if self._ignore_errors is False.
+        :param max_depth: how deep to descend into subdirectories
+        :type max_depth: int
+        """
         for p in self.paths:
             plugins = self._search_dir(p, max_depth=max_depth)
             for pl in plugins:
@@ -145,11 +190,12 @@ def requires(condition=True, modules=[]):
     This should be used as a decorator.
     The arguments describe these requirements.
     A plugin will only be used if ALL the requirements are met.
-    Arguments:
-        condition: A boolean. This can be used for custom requirements.
-        modules: A list of module names required for this plugin.
-    Returns:
-        A decorator function.
+    :param condition: boolean which needs to be True in order to fulfil this requirement
+    :type condition: boolean
+    :param modules: A list of module names required for this plugin.
+    :type modules: list
+    :return: A decorator function.
+    :rtype: function
     """
     requirements = {
         "condition": condition,
@@ -191,6 +237,9 @@ def priority(n=0):
     Higher values indicate a higher priority.
     This should be used as a decorator.
     Returns a decorator function.
+    :param n: priority (higher values = higher priority)
+    :type n: int
+    :rtype: function
     """
     def wrapper(cls):
         cls._plugin_priority = n
@@ -199,7 +248,13 @@ def priority(n=0):
 
 
 def get_priority(cls):
-    """returns the priority of a plugin."""
+    """
+    Returns the priority of a plugin.
+    :param cls: class to get priority from
+    :type cls: class
+    :return: the priority of cls
+    :rtype: int
+    """
     if not hasattr(cls, "_plugin_priority"):
         return 0
     return cls._plugin_priority

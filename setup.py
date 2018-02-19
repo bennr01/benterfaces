@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name="benterfaces",
-    version="0.0.1",
+    version="0.1.0",
     author="bennr01",
     author_email="benjamin99.vogt@web.de",
     description="interface utilities",
