@@ -328,3 +328,17 @@ def test_only_for():
     else:
         # test failed
         raise AssertionError("plugin discovery for usecase specific plugins did not fail for value=3")
+
+
+def test_is_implemented_only_for():
+    """test PluginDiscoverer.is_implemented() with the plugin usecase marker"""
+    discoverer = get_discoverer()
+    discoverer.load_plugins()
+    assert discoverer.loaded > 0
+    assert discoverer.enabled > 0
+    # value = 1
+    assert discoverer.is_implemented(IUseSpecificTestPlugin, for_={"value": 1})
+    # value = 2
+    assert discoverer.is_implemented(IUseSpecificTestPlugin, for_={"value": 2})
+    # value = 3
+    assert not discoverer.is_implemented(IUseSpecificTestPlugin, for_={"value": 3})

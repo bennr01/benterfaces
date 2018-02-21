@@ -107,12 +107,21 @@ class PluginDiscoverer(object):
 
     get_plugin = get_implementation
 
-    def is_implemented(self, iface, exclude=[]):
+    def is_implemented(self, iface, exclude=[], for_={}):
         """
         Returns True if there is an implementation of iface which is not in excluding.
         Returns False otherwise.
+        :param iface: iface for which plugins will be searched.
+        :type iface: zope.interface.Interface
+        :param exclude: plugins which will not be returned from this list.
+        :type exclude: list
+        :param for_: dictionary which will be passed to the plugins checker functions
+        :type for_: dict
+        :return: whether there is a plugin implementing iface or not
+        :rtype: boolean
         """
         plugins = self.get_all_plugins(iface, exclude=exclude, sorted_by_priority=False)
+        plugins = list(filter(lambda e: should_use(e, for_), plugins))
         if len(plugins) == 0:
             return False
         else:
