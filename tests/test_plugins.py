@@ -20,7 +20,7 @@ from zope.interface import implements
 from zope.interface.verify import BrokenImplementation
 
 from benterfaces import PluginDiscoverer, verify_implementation
-from benterfaces._test import ITestPlugin, IDoNotImplement
+from benterfaces._test import ITestPlugin, IDoNotImplement, IUseSpecificTestPlugin
 from benterfaces._test import TestPluginForExlusion, TestPluginForInclusion
 from benterfaces._test import IRequirementTestPlugin, IPriorityTestPlugin
 
@@ -304,3 +304,27 @@ def test_ignore_errors_true():
     assert discoverer.errors > 0
     assert len(discoverer.error_paths) == 1
     assert "not_working_plugin.py" in discoverer.error_paths[0]
+
+
+def test_only_for():
+    """test plugin usecase marker"""
+    discoverer = get_discoverer()
+    discoverer.load_plugins()
+    assert discoverer.loaded > 0
+    assert discoverer.enabled > 0
+    # value = 1
+    p1 = discoverer.get_implementation(IUseSpecificTestPlugin, for_={"value": 1})()
+    assert p1.get_id() == "test_plugin_for_value_1"
+    # value = 2
+    p2 = discoverer.get_implementation(IUseSpecificTestPlugin, for_={"value": 2})()
+    assert p2.get_id() == "test_plugin_for_value_2"
+    # value = 3
+    try:
+        # this should fail
+        p3 = discoverer.get_implementation(IUseSpecificTestPlugin, for_={"value": 3})()
+    except NotImplementedError:
+        # expected
+        pass
+    else:
+        # test failed
+        raise AssertionError("plugin discovery for usecase specific plugins did not fail for value=3")

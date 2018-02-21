@@ -85,7 +85,7 @@ class PluginDiscoverer(object):
             ret.sort(key=get_priority, reverse=True)
         return ret
 
-    def get_implementation(self, iface, exclude=[]):
+    def get_implementation(self, iface, exclude=[], for_={}):
         """
         Returns an implementation of iface, excluding any implementation in excluding.
         Raises NotImplementedError if None is found.
@@ -93,13 +93,16 @@ class PluginDiscoverer(object):
         :type iface: zope.interface.Interface
         :param exclude: plugins which will not be returned from this list.
         :type exclude: list
+        :param for_: dictionary which will be passed to the plugins checker functions
+        :type for_: dict
         :return: the plugin with the heighest priority
         :rtype: object
         :raises: NotImplementedError if no plugin implements iface
         """
         plugins = self.get_all_plugins(iface, exclude=exclude, sorted_by_priority=True)
+        plugins = list(filter(lambda e: should_use(e, for_), plugins))
         if len(plugins) == 0:
-            raise NotImplementedError("No (working) implementation found for {iface!r}.".format(iface=iface))
+            raise NotImplementedError("No (usable) implementation found for {iface!r} with {for_!r}.".format(iface=iface, for_=for_))
         return plugins[0]
 
     get_plugin = get_implementation
@@ -210,7 +213,7 @@ def requires(condition=True, modules=[]):
 
 
 def check_requirements(cls):
-    """checks the requirements of a plugin."""
+    """check the requirements of a plugin."""
     if not hasattr(cls, "_plugin_requirements"):
         # no requirements marked.
         return True
@@ -258,3 +261,35 @@ def get_priority(cls):
     if not hasattr(cls, "_plugin_priority"):
         return 0
     return cls._plugin_priority
+
+
+def only_if(f):
+    """
+    Marks usecases of a plugin.
+    The plugin will only be used if f(for_) returns True,
+    where for_ is a dictionary passed to PluginDiscoverer._get_implementation()
+    :param f: function to check whether this plugin should be used or not.
+    :type f: function
+    :return: decorator function
+    :rtype: function
+    """
+    def wrapper(cls):
+        cls._plugin_should_be_used = staticmethod(f)
+        return cls
+    return wrapper
+
+
+def should_use(cls, for_):
+    """
+    Check whether this plugin should be used or not.
+    :param cls: plugin/class ot check
+    :type cls: class
+    :param for_: argument to be passed to the check function
+    :type for_: dict
+    :return: wether this plugin should be used or not.
+    :rtype: boolean
+    """
+    if not hasattr(cls, "_plugin_should_be_used"):
+        # not otherwise specified
+        return True
+    return cls._plugin_should_be_used(for_)
