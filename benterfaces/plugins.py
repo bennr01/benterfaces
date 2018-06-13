@@ -189,7 +189,10 @@ class PluginDiscoverer(object):
             obj = getattr(mod, on)
             if on.startswith("_") and ignore_private:
                 continue
-            implements = list(implementedBy(obj))
+            try:
+                implements = list(implementedBy(obj))
+            except TypeError:
+                continue
             if len(implements) == 0:
                 continue
             results.append(obj)
